@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Voxel Online v2</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div id="game"></div>
+<header class="hud">
+ <div class="pill">🌲 <b>Voxel Online v2</b> · Sala <span id="room-name">—</span></div>
+ <div class="pill">👥 <span id="player-count">1</span> · <span id="connection">Offline</span></div>
+</header>
+<aside class="player-list pill">Na sala: <span id="player-names">Você</span></aside>
+<div class="help pill">WASD mover · Espaço pular · Arrastar mouse olhar<br>Duplo clique quebrar · Botão direito colocar · 1/2/3 blocos</div>
+<div id="mobile-controls">
+ <div class="dpad">
+  <button data-move="forward">▲</button>
+  <button data-move="left">◀</button>
+  <button data-move="back">▼</button>
+  <button data-move="right">▶</button>
+ </div>
+ <div class="mobile-actions"><button id="mobile-jump">Pular</button><button id="mobile-break">Quebrar</button><button id="mobile-place">Colocar</button></div>
+</div>
+<div id="join-screen">
+ <form id="join-form" class="join-card">
+  <h1>Voxel Online</h1><p>Entre em uma sala e explore com seus amigos.</p>
+  <label>Apelido<input id="nickname" maxlength="16" placeholder="Seu nome"></label>
+  <label>Código da sala<input id="room-code" maxlength="16" value="MUNDO1"></label>
+  <button class="primary" type="submit">Entrar no mundo</button>
+  <small>Para jogar com amigos, todos devem acessar o mesmo endereço e usar o mesmo código.</small>
+ </form>
+</div>
+<script src="/socket.io/socket.io.js"></script>
+<script type="module" src="/js/main.js"></script>
+</body></html>
