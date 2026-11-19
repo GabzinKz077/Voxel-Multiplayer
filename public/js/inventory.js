@@ -1,0 +1,10 @@
+export const ITEMS={grass:'🌱',dirt:'🟫',stone:'🪨',wood:'🪵',leaves:'🍃',sand:'🟨',planks:'📦',coal:'⚫',apple:'🍎',meat:'🍖',wool:'☁️',leather:'🟤',stick:'🦯',sword:'⚔️'};
+export const RECIPES=[{name:'Tábuas ×4',in:{wood:1},out:{planks:4}},{name:'Gravetos ×4',in:{planks:2},out:{stick:4}},{name:'Espada',in:{stick:1,stone:2},out:{sword:1}}];
+export class Inventory{
+ constructor(){this.items={dirt:8,wood:3,apple:2};this.selected='dirt';this.open=false;this.render();}
+ count(item){return this.items[item]||0}add(item,n=1){this.items[item]=Math.max(0,this.count(item)+n);this.render()}use(item,n=1){if(this.count(item)<n)return false;this.add(item,-n);return true}
+ craft(recipe){if(!Object.entries(recipe.in).every(([i,n])=>this.count(i)>=n))return false;for(const [i,n] of Object.entries(recipe.in))this.use(i,n);for(const [i,n] of Object.entries(recipe.out))this.add(i,n);return true}
+ select(item){this.selected=item;this.render()}
+ render(){const hot=document.querySelector('#hotbar'),bag=document.querySelector('#bag-items'),recipes=document.querySelector('#recipes');if(!hot)return;const slots=['dirt','stone','wood','planks','grass','sand','leaves','apple','meat'];hot.replaceChildren();slots.forEach((item,i)=>{const b=document.createElement('button');b.className='slot'+(this.selected===item?' active':'');b.title=item;b.textContent=`${ITEMS[item]} ${this.count(item)}`;b.onclick=()=>this.select(item);hot.append(b)});bag.replaceChildren();for(const item of Object.keys(ITEMS)){const b=document.createElement('button');b.className='slot';b.textContent=`${ITEMS[item]} ${item}: ${this.count(item)}`;b.onclick=()=>this.select(item);bag.append(b)}recipes.replaceChildren();for(const recipe of RECIPES){const b=document.createElement('button');b.className='recipe';b.textContent=`${recipe.name} — ${Object.entries(recipe.in).map(([i,n])=>`${n} ${i}`).join(' + ')}`;b.disabled=!Object.entries(recipe.in).every(([i,n])=>this.count(i)>=n);b.onclick=()=>{this.craft(recipe);this.render()};recipes.append(b)}}
+ toggle(){this.open=!this.open;document.querySelector('#inventory').hidden=!this.open;this.render()}
+}

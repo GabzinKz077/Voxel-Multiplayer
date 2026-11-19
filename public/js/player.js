@@ -1,0 +1,11 @@
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+import {CONFIG} from './config.js';
+export class Player{
+ constructor(scene,camera){this.camera=camera;this.x=0;this.y=6;this.z=0;this.vx=0;this.vy=0;this.vz=0;this.grounded=false;this.health=20;this.hunger=20;this.mesh=new THREE.Group();const body=new THREE.Mesh(new THREE.BoxGeometry(.62,1.15,.4),new THREE.MeshLambertMaterial({color:0x397bd5}));body.position.y=.72;this.mesh.add(body);const head=new THREE.Mesh(new THREE.BoxGeometry(.45,.45,.45),new THREE.MeshLambertMaterial({color:0xf0c59e}));head.position.y=1.55;this.mesh.add(head);scene.add(this.mesh)}
+ collides(world,x,y,z){for(let xx=Math.floor(x-.29+.5);xx<=Math.floor(x+.29+.5);xx++)for(let zz=Math.floor(z-.29+.5);zz<=Math.floor(z+.29+.5);zz++)for(let yy=Math.floor(y+.05+.5);yy<=Math.floor(y+1.76-.05+.5);yy++)if(world.blockAt(xx,yy,zz)!=='air'&&Math.abs(x-xx)<.79&&Math.abs(z-zz)<.79&&y<yy+.5&&y+1.8>yy-.5)return true;return false;}
+ update(dt,input,world){const {forward,side}=input.move(),sin=Math.sin(input.yaw),cos=Math.cos(input.yaw),speed=CONFIG.playerSpeed,mag=Math.max(1,Math.hypot(forward,side));const tx=(side*cos-forward*sin)*speed/mag,tz=(-side*sin-forward*cos)*speed/mag;this.vx+=(tx-this.vx)*Math.min(1,dt*12);this.vz+=(tz-this.vz)*Math.min(1,dt*12);
+ if((input.keys[' ']||input.wantJump)&&this.grounded){this.vy=CONFIG.jumpSpeed;this.grounded=false;input.wantJump=false}this.vy=Math.max(-28,this.vy-CONFIG.gravity*dt);
+ const steps=Math.max(1,Math.ceil(Math.max(Math.abs(this.vx*dt),Math.abs(this.vy*dt),Math.abs(this.vz*dt))/.12));for(let i=0;i<steps;i++){let dx=this.vx*dt/steps,dy=this.vy*dt/steps,dz=this.vz*dt/steps;if(!this.collides(world,this.x+dx,this.y,this.z))this.x+=dx;else this.vx=0;if(!this.collides(world,this.x,this.y,this.z+dz))this.z+=dz;else this.vz=0;if(!this.collides(world,this.x,this.y+dy,this.z)){this.y+=dy;this.grounded=false}else{if(dy<0)this.grounded=true;this.vy=0;}}
+ if(this.y< -12){this.x=0;this.y=8;this.z=0;this.vy=0}this.mesh.position.set(this.x,this.y,this.z);this.mesh.rotation.y=input.yaw;this.camera.position.set(this.x,this.y+1.63,this.z);this.camera.rotation.order='YXZ';this.camera.rotation.y=input.yaw;this.camera.rotation.x=input.pitch;}
+ data(yaw){return {x:this.x,y:this.y,z:this.z,yaw}}
+}
